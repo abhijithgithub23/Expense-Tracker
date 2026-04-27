@@ -26,5 +26,12 @@
         "type": "Expense",
         "category": "Dinner",
         "date": "2026-04-23"
+    },
+    {
+        "id": 6,
+        "amount": 1000.0,
+        "type": "Expense",
+        "category": "GYM",
+        "date": "2026-04-27"
     }
 ]

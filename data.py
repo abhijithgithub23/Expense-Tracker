@@ -35,7 +35,7 @@ def add_transaction(amount, trans_type, category):
 
 def delete_transaction(trans_id):
     data = load_data()
-    data = [item for item in data if item["id"] != trans_id]
+    data = [item for item in data if item["id"] != trans_id] #filter 
     save_data(data)
 
 def update_transaction(trans_id, amount, trans_type, category):

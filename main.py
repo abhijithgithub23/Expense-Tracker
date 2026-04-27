@@ -6,7 +6,7 @@ class ExpenseTrackerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Expense Tracker")
-        self.root.geometry("700x650") # Slightly taller to comfortably fit the new layout
+        self.root.geometry("700x650") 
         
         # --- TOP SECTION: Input Fields ---
         input_frame = tk.Frame(self.root, pady=10)
@@ -47,20 +47,23 @@ class ExpenseTrackerApp:
         
         tk.Button(action_frame, text="Update Selected", command=self.update_entry, bg="orange").pack(side=tk.LEFT, padx=5)
         tk.Button(action_frame, text="Delete Selected", command=self.delete_entry, bg="red", fg="white").pack(side=tk.LEFT, padx=5)
+        # Added a visual "Clear" button for better UX as an alternative to clicking away
+        tk.Button(action_frame, text="Clear Selection", command=self.clear_selection, bg="gray", fg="white").pack(side=tk.LEFT, padx=20)
 
         # --- DASHBOARD SECTION: Balances & Summaries ---
         dashboard_frame = tk.Frame(self.root, pady=15)
         dashboard_frame.pack(fill=tk.BOTH, padx=20)
 
         self.balance_label = tk.Label(dashboard_frame, text="Balance: ₹0.00", font=("Arial", 13, "bold"))
-        self.balance_label.pack(anchor="w") # anchor="w" aligns the text to the left (West)
+        self.balance_label.pack(anchor="w") 
 
-        # wraplength ensures long category lists drop to the next line instead of getting cut off
         self.summary_label = tk.Label(dashboard_frame, text="", font=("Arial", 11), justify=tk.LEFT, wraplength=650)
         self.summary_label.pack(anchor="w", pady=8)
 
-        # Bind row selection to populate entry fields for easy updating
+        # --- BINDINGS ---
         self.tree.bind('<ButtonRelease-1>', self.select_item)
+        # New binding: triggers when you click anywhere inside the table area
+        self.tree.bind('<Button-1>', self.handle_tree_click) 
 
         # Initial Load
         self.refresh_ui()
@@ -89,6 +92,27 @@ class ExpenseTrackerApp:
             
         self.summary_label.config(text=summary_text)
 
+    # --- NEW HELPER METHODS ---
+    def clear_inputs(self):
+        """Helper to instantly blank out the input fields."""
+        self.amount_var.set("")
+        self.category_var.set("")
+        self.type_var.set("Expense")
+
+    def clear_selection(self):
+        """Removes table selection and clears inputs."""
+        if self.tree.selection():
+            self.tree.selection_remove(self.tree.selection())
+        self.clear_inputs()
+
+    def handle_tree_click(self, event):
+        """Checks if the user clicked on empty space in the table to unselect."""
+        # identify_row returns empty if you clicked below the actual data rows
+        row_id = self.tree.identify_row(event.y)
+        if not row_id: 
+            self.clear_selection()
+
+    # --- CRUD ACTIONS ---
     def add_entry(self):
         amount = self.amount_var.get()
         trans_type = self.type_var.get()
@@ -104,8 +128,7 @@ class ExpenseTrackerApp:
             return
 
         data.add_transaction(amount, trans_type, category)
-        self.amount_var.set("")
-        self.category_var.set("")
+        self.clear_selection() 
         self.refresh_ui()
 
     def select_item(self, event):
@@ -115,7 +138,6 @@ class ExpenseTrackerApp:
             return
         values = self.tree.item(selected, 'values')
         
-        # values[1] has the ₹ symbol, we need to strip it out
         clean_amount = values[1].replace('₹', '')
         
         self.amount_var.set(clean_amount)
@@ -140,8 +162,7 @@ class ExpenseTrackerApp:
             return
 
         data.update_transaction(trans_id, amount, trans_type, category)
-        self.amount_var.set("")
-        self.category_var.set("")
+        self.clear_selection()
         self.refresh_ui()
 
     def delete_entry(self):
@@ -152,8 +173,7 @@ class ExpenseTrackerApp:
             
         trans_id = int(self.tree.item(selected, 'values')[0])
         data.delete_transaction(trans_id)
-        self.amount_var.set("")
-        self.category_var.set("")
+        self.clear_selection() 
         self.refresh_ui()
 
 if __name__ == "__main__":
