@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-import data  # Imports our CRUD logic
+import data  # logic
 
 class ExpenseTrackerApp:
     def __init__(self, root):
@@ -8,7 +8,7 @@ class ExpenseTrackerApp:
         self.root.title("Expense Tracker")
         self.root.geometry("700x650") 
         
-        # --- TOP SECTION: Input Fields ---
+        # ui top section
         input_frame = tk.Frame(self.root, pady=10)
         input_frame.pack(fill=tk.X)
 
@@ -29,7 +29,7 @@ class ExpenseTrackerApp:
 
         tk.Button(input_frame, text="Add Transaction", command=self.add_entry, bg="green", fg="white").grid(row=0, column=6, padx=10)
 
-        # --- MIDDLE SECTION: Table (Treeview) ---
+        # ui middle list
         table_frame = tk.Frame(self.root, pady=10)
         table_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -41,7 +41,7 @@ class ExpenseTrackerApp:
         
         self.tree.pack(fill=tk.BOTH, expand=True, padx=20)
 
-        # --- ACTIONS SECTION: Update & Delete Buttons ---
+        #  Update & Delete Buttons
         action_frame = tk.Frame(self.root, pady=5)
         action_frame.pack(fill=tk.X, padx=15)
         
@@ -50,7 +50,7 @@ class ExpenseTrackerApp:
         # Added a visual "Clear" button for better UX as an alternative to clicking away
         tk.Button(action_frame, text="Clear Selection", command=self.clear_selection, bg="gray", fg="white").pack(side=tk.LEFT, padx=20)
 
-        # --- DASHBOARD SECTION: Balances & Summaries ---
+        #  Balances & Summaries
         dashboard_frame = tk.Frame(self.root, pady=15)
         dashboard_frame.pack(fill=tk.BOTH, padx=20)
 
@@ -62,7 +62,7 @@ class ExpenseTrackerApp:
 
         # --- BINDINGS ---
         self.tree.bind('<ButtonRelease-1>', self.select_item)
-        # New binding: triggers when you click anywhere inside the table area
+
         self.tree.bind('<Button-1>', self.handle_tree_click) 
 
         # Initial Load
@@ -92,7 +92,6 @@ class ExpenseTrackerApp:
             
         self.summary_label.config(text=summary_text)
 
-    # --- NEW HELPER METHODS ---
     def clear_inputs(self):
         """Helper to instantly blank out the input fields."""
         self.amount_var.set("")
@@ -107,7 +106,6 @@ class ExpenseTrackerApp:
 
     def handle_tree_click(self, event):
         """Checks if the user clicked on empty space in the table to unselect."""
-        # identify_row returns empty if you clicked below the actual data rows
         row_id = self.tree.identify_row(event.y)
         if not row_id: 
             self.clear_selection()
