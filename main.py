@@ -62,7 +62,6 @@ class ExpenseTrackerApp:
 
         # --- BINDINGS ---
         self.tree.bind('<ButtonRelease-1>', self.select_item)
-
         self.tree.bind('<Button-1>', self.handle_tree_click) 
 
         # Initial Load
@@ -119,13 +118,17 @@ class ExpenseTrackerApp:
         if not amount or not category:
             messagebox.showerror("Error", "Amount and Category are required!")
             return
+        
         try:
-            float(amount)
+            val = float(amount)
+            if val <= 0:
+                messagebox.showerror("Error", "Amount must be greater than 0!")
+                return
         except ValueError:
-            messagebox.showerror("Error", "Amount must be a number!")
+            messagebox.showerror("Error", "Amount must be a valid number!")
             return
 
-        data.add_transaction(amount, trans_type, category)
+        data.add_transaction(val, trans_type, category)
         self.clear_selection() 
         self.refresh_ui()
 
@@ -154,12 +157,15 @@ class ExpenseTrackerApp:
         category = self.category_var.get()
         
         try:
-            float(amount)
+            val = float(amount)
+            if val <= 0:
+                messagebox.showerror("Error", "Amount must be greater than 0!")
+                return
         except ValueError:
-            messagebox.showerror("Error", "Amount must be a number!")
+            messagebox.showerror("Error", "Amount must be a valid number!")
             return
 
-        data.update_transaction(trans_id, amount, trans_type, category)
+        data.update_transaction(trans_id, val, trans_type, category)
         self.clear_selection()
         self.refresh_ui()
 
@@ -178,3 +184,6 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ExpenseTrackerApp(root)
     root.mainloop()
+
+  
+
